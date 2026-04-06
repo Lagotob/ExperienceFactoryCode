@@ -1,0 +1,35 @@
+# Два сервиса: WebSayt (Express) + Telegram-бот. Общая Neon: DATABASE_URL в обоих.
+# Документация: https://render.com/docs/infrastructure-as-code
+services:
+  - type: web
+    name: exp-factory-web
+    runtime: node
+    branch: main
+    rootDir: WebSayt
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        sync: false
+
+  - type: worker
+    name: experience-factory-bot
+    runtime: python
+    branch: main
+    rootDir: experience_factory_bot
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: BOT_TOKEN
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_IDS
+        sync: false
+      - key: GROUP_ID
+        sync: false
